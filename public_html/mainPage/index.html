@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Page</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="jquery.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script ref="script.js"></script>
+</head>
+<body>
+
+<div id="addProduct">
+    <h2>ADD PRODUCT</h2>
+
+    <input type="text" id="p_name" placeholder="product name">
+    <input type="text" id="category" placeholder="category">
+    <input type="text" id="available_quantity" placeholder="available_quantity">
+    <input type="text" id="vat" placeholder="vat">
+    <input type="text" id="price" placeholder="price">
+    <input type="text" id="time_per_order" placeholder="time_per_order">
+    <input type="text" id="queuedOrders" placeholder="queuedOrders">
+    <button type="button" id="addBtn">Add</button>
+
+</div>
+
+<div id="removeProduct">
+    <h2>REMOVE PRODUCT</h2>
+    <input type="text" id="p_name_remove" placeholder="product name">
+    <button type="button" id="remBtn">Remove</button>
+</div>
+
+<div>
+    <h1>Orders</h1>
+    <ol id="ordersList">
+
+    </ol>
+
+</div>
+
+</body>
+</html>

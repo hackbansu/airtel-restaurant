@@ -1,0 +1,14 @@
+div{
+    min-height: 200px;
+    background-color: orangered;
+    margin: 10px;
+    padding: 10px;
+}
+
+div:first-of-type{
+    background-color: forestgreen;
+}
+
+div:last-of-type{
+    background-color: ghostwhite;
+}

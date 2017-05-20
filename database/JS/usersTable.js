@@ -8,7 +8,7 @@ const pool = database.pool;
 const createQueryHavingWhereClause = database.createQueryHavingWhereClause;
 
 function getUsersDetails(identity, details, done) {
-    createQueryHavingWhereClause("SELECT ?? FROM adminUsers WHERE ", identity)
+    let sql = createQueryHavingWhereClause("SELECT ?? FROM adminUsers WHERE ", identity)
 
     pool.getConnection(function (err, connection) {
         if (err) throw err;

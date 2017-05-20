@@ -2,15 +2,33 @@
  * Created by hackbansu on 10/5/17.
  */
 const express = require('express');
-const db = require('./database/JS/database')
+const db = require('./database/JS/database');
 const path = require('path');
 const bodyParser = require('body-parser');
-const passport = require('passport')
-const passportLocal = require('passport-local')
-const session = require('express-session')
-
+const passport = require('passport');
+const passportLocal = require('passport-local');
+const session = require('express-session');
+const LocalStrategy = passportLocal.Strategy;
+const http = require('http');
+const database = require('./database/JS/database')
 
 const app = express();
+const server = http.Server(app);
+const socket = require('socket.io');
+const io = socket(server);
+var clients = {};
+
+io.on("connection", function (conn) {
+    console.log("a client connected");
+    conn.on("myevent", function (data) {
+        clients[data] = conn.id;
+    });
+
+    conn.on("disconnect", function (data) {
+        console.log("User has disconnected " + data)
+    });
+});
+
 
 passport.use(new LocalStrategy({
     usernameField: 'userName',
@@ -18,10 +36,10 @@ passport.use(new LocalStrategy({
 }, function (userName, password, done) {
     console.log("Checking credentials");
 
-    database.usersTable.getUsersByIdentity({
+    database.usersTable.getUsersDetails({
         userName: userName,
         password: password
-    }, ["id", "email", "fullName"], function (result) {
+    }, ['*'], function (result) {
         if (!result[0]) {
             console.log("Invalid email or password");
             done(null, false, {message: "Invalid email or password"})
@@ -37,7 +55,7 @@ passport.serializeUser(function (user, done) {
     return done(null, user.id);
 })
 passport.deserializeUser(function (id, done) {
-    database.usersTable.getUsersByIdentity({id: id}, ["id", "email", "fullName"], function (result, fields) {
+    database.usersTable.getUsersDetails({id: id}, ['*'], function (result, fields) {
         return done(null, result[0]);
     })
 })
@@ -45,7 +63,7 @@ passport.deserializeUser(function (id, done) {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(session({
-    secret: "tale secret key",
+    secret: "airtel sec key",
     resave: false,
     saveUninitialized: false,
 }))
@@ -53,13 +71,13 @@ app.use(passport.initialize());
 app.use(passport.session())
 
 //client side handlers
-app.get('/', function (req, res) {
-    res.send('working restaurant');
-})
+// app.get('/', function (req, res) {
+//     res.send('working restaurant');
+// })
 
 //req.query = {}
 app.get('/getItems', function (req, res) {
-    db.ItemsTable.getItems(['*'], function (result, fields) {
+    db.itemsTable.getItems(['*'], function (result, fields) {
         // console.log(result);
         res.send(result);
     })
@@ -67,7 +85,7 @@ app.get('/getItems', function (req, res) {
 
 //req.query = {}
 app.get('/getTimes', function (req, res) {
-    db.ItemsTable.getItems(['timePerOrder','queuedOrders'], function (result, fields) {
+    db.itemsTable.getItems(['timePerOrder', 'queuedOrders'], function (result, fields) {
         // console.log(result);
         res.send(result);
     })
@@ -76,7 +94,7 @@ app.get('/getTimes', function (req, res) {
 //req.query = {name}
 app.get('/searchItems', function (req, res) {
     let name = req.query.name;
-    if(!name){
+    if (!name) {
         res.send('invalid name!');
         return;
     }
@@ -87,31 +105,35 @@ app.get('/searchItems', function (req, res) {
     })
 });
 
-app.use('/getImage', express.static(path.join(__dirname, '/database/images/')));
+app.post('/placeOrder', function (req, res) {
+    //some database work to be done
 
-
-//merchant side handlers
-app.post('/login', function (req, res, next) {
-    if(req['user']){
-        return res.send("You are logged in to an account. Please logout first.");
-    }
-    passport.authenticate('local', function (err, user, info) {
-        if (err) {
-            return next(err);
-        }
-        if (!user) {
-            return res.send("Invalid email or password");
-        }
-        req.logIn(user, function (err) {
-            if (err) {
-                return next(err);
-            }
-            return res.send('login successfully');
-        });
-    })(req, res, next);
+    io.emit("newOrder", req.body.order);
+    res.json(true);
 });
 
+app.use('/getImage', express.static(path.join(__dirname, '/database/images/')));
 
-app.listen(4100, function () {
-    console.log("server successfully started at 4100");
+//merchant side handlers
+app.post('/login',
+    passport.authenticate('local', {
+        successRedirect: '/',
+        failureRedirect: '/login'
+    }));
+
+app.use('/login', function(req, res, next){ console.log('in use login');next();},express.static(path.join(__dirname, '/public_html/loginPage')))
+
+app.use('/', function (req, res, next) {
+    if (req['user']) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+}, express.static(path.join(__dirname, '/public_html/mainPage')))
+
+app.use('/adminWork', require('./database/JS/adminTasks'));
+
+
+app.listen(5000, function () {
+    console.log("server successfully started at 5000");
 })
