@@ -5,7 +5,7 @@ const dbPoolConf = {
     host: 'localhost',
     user: 'hackbansu',
     password: 'developer6272426',
-    database: 'airtel',
+    database: 'airtel_restaurant',
 };
 const pool = mysql.createPool(dbPoolConf);
 let num_requests = 0;
@@ -53,5 +53,6 @@ module.exports.createQueryHavingWhereClause = createQueryHavingWhereClause;
 
 //exporting things
 module.exports = {
-    productsTable: require('./productsTable.js'),
+    itemsTable: require('./itemsTable'),
+    usersTable: require('./usersTable'),
 };
