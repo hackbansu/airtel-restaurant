@@ -43,13 +43,13 @@ function searchItems(identity, details, done) {
     });
 }
 
-function addNewProduct(product, done) {
+function addNewItem(item, done) {
     let sql = "INSERT INTO ITEMS SET ?";
 
     pool.getConnection(function (err, connection) {
         if (err) throw err;
 
-        connection.query(sql, [product], function (err, result, fields) {
+        connection.query(sql, [item], function (err, result, fields) {
             connection.release();
             if (err) throw err;
 
@@ -58,8 +58,8 @@ function addNewProduct(product, done) {
     });
 }
 
-function removeProduct(product, done) {
-    let sql = "DELETE FROM ITEMS WHERE p_name = " + mysql.escape(product.p_name);
+function removeItem(item, done) {
+    let sql = "DELETE FROM ITEMS WHERE p_name = " + mysql.escape(item.p_name);
 
     pool.getConnection(function (err, connection) {
         if (err) throw err;
@@ -76,6 +76,6 @@ function removeProduct(product, done) {
 module.exports = {
     getItems,
     searchItems,
-    addNewProduct,
-    removeProduct,
+    addNewItem,
+    removeItem,
 };

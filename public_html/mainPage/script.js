@@ -38,8 +38,8 @@ $(function () {
         let time_per_orderVal = time_per_order.val();
         let queuedOrdersVal = queuedOrders.val();
 
-        $.post('/adminTasks/addNewProduct', {
-            product: {
+        $.post('/adminTasks/addNewItem', {
+            item: {
                 p_name: p_nameVal,
                 category: categoryVal,
                 available_quantity: available_quantityVal,
@@ -55,8 +55,8 @@ $(function () {
 
     remBtn.click(function (ev) {
         let p_name_removeVal = p_name_remove.val();
-        $.post('/adminTasks/removeProduct', {
-            product: {
+        $.post('/adminTasks/removeItem', {
+            item: {
                 p_name: p_name_removeVal,
             },
         }, function (data) {

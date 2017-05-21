@@ -7,8 +7,8 @@ const router = express.Router;
 const route = router();
 const db = require('./../../database/JS/database');
 
-route.post('/addNewProduct', function (req, res) {
-    db.itemsTable.addNewProduct(req.body.product, function (data) {
+route.post('/addNewItem', function (req, res) {
+    db.itemsTable.addNewItem(req.body.item, function (data) {
         // console.log(data);
         if(data.affectedRows === 1){
             res.json(true);
@@ -18,8 +18,8 @@ route.post('/addNewProduct', function (req, res) {
     });
 });
 
-route.get('/removeProduct', function (req, res) {
-    db.itemsTable.removeProduct(req.body.product, function (data) {
+route.get('/removeItem', function (req, res) {
+    db.itemsTable.removeItem(req.body.item, function (data) {
         // console.log(data);
         if(data.affectedRows === 1){
             res.json(true);

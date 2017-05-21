@@ -108,6 +108,7 @@ app.get('/searchItems', function (req, res) {
 app.post('/placeOrder', function (req, res) {
     //some database work to be done
 
+
     io.emit("newOrder", req.body.order);
     res.json(true);
 });
